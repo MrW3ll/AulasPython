@@ -42,16 +42,17 @@ class Conta:
 
 
 
-    def aproveitando(self):
+    def saude_financeira(self):
         qtd_saida = 0
         valor_saida = 0.0
 
         for m in self.movimentacoes:
             if m.tipo == 'saida':
                 qtd_saida += 1
-                valor =+ m.valor
-                
-        return (qtd_saida/len(self.movimentacoes)) * 100, valor_saida        
+                valor_saida =+ m.valor
+
+        percentual_saida = (qtd_saida / len(self.movimentacoes)) * 100        
+        return percentual_saida, valor_saida        
 
 
 
@@ -61,7 +62,7 @@ con = Conta()
 
 while True:
 
-    opcao = int(input('Selecione a ação desejada:\n 1.Cadastrar \n2.Listar \n3.Calcular saldo \n4.Sair \n'))
+    opcao = int(input('Selecione a ação desejada:\n 1.Cadastrar \n2.Listar \n3.Calcular saldo \n4.Verificar Saude \n5.Sair \n'))
 
     if opcao == 1:
        
@@ -109,11 +110,22 @@ while True:
         saldo = con.cal_saldo()
         print(f'Saldo: {saldo}')
 
-
     elif opcao == 4:
+        percentual_saida, valor_saida = con.saude_financeira()
+        
+        if percentual_saida < 30:
+            print('Sua saúde financeira está BOA!')
+        elif percentual_saida <= 60:
+            print('Sua saúde financeira está REGULAR!')
+        else:
+            print(f'Sua saúde financeira está em RISCO! Você teve R${valor_saida:.2f} em saídas ({percentual_saida:.2f}%).')
+
+    elif opcao == 5:
         print('Encerrando programa...')
         break
 
+    else:
+        print('Opção invalida! Tente novamente.')    
 
 
 
