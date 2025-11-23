@@ -23,7 +23,7 @@ class Conta:
             elif m.tipo == "saida":
                 total_saldo -= m.valor
         saldo = total_saldo - poupanca
-        return saldo
+        return saldo, poupanca
 
     def add_poupanca(self):
         total_poupanca = 0.0
@@ -133,10 +133,10 @@ while True:
 
     elif opcao == '3':
         os.system("cls")
-
-        # CORREÇÃO AQUI ↓↓↓
+        
+        saldo, poupanca = con.cal_saldo()
         print(f"Saldo disponivel: {con.cal_saldo():.2f}\n")
-        # CORREÇÃO AQUI ↑↑↑
+        print(f"Saldo poupanca: {poupanca:.2f}")
 
         con.menu_inicial()
 
