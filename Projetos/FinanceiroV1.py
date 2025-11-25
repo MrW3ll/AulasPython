@@ -8,7 +8,7 @@ class Transacao:
         self.tipo = tipo.lower()
         self.categoria = categoria.lower()
         self.data = data
-        self.cabecalho = ["Valor", "Tipo", "Categoria", "Data"]
+        
 
 class Conta:
     def __init__(self):
