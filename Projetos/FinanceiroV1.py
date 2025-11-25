@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+import pandas as pd
 
 class Transacao:
     def __init__(self, valor, tipo, categoria, data):
@@ -8,7 +8,7 @@ class Transacao:
         self.tipo = tipo.lower()
         self.categoria = categoria.lower()
         self.data = data
-
+        self.cabecalho = ["Valor", "Tipo", "Categoria", "Data"]
 
 class Conta:
     def __init__(self):
@@ -38,10 +38,33 @@ class Conta:
         return self.cal_saldo()
 
     def listar_transacao(self):
-        print(f"A conta possui {len(self.movimentacoes)} movimentos.\n\n")
-        for m in self.movimentacoes:
-            print(f"[{m.tipo}]: {m.categoria} R${m.valor}|{m.data}")
-        print(f"\n\nSaldo dísponivel R${self.cal_saldo()}")
+        print(f"A conta possui {len(self.movimentacoes)} movimentos.\n")
+
+        pd.set_option('display.width', None)
+        pd.set_option('display.max_colwidth', None)
+        pd.set_option('display.colheader_justify','center')
+
+        dados = pd.DataFrame([{
+            'Valor': m.valor,
+            'Tipo': m.tipo,
+            'Categoria': m.categoria,
+            'Data': m.data.strftime("%d/%m/%Y")
+        } for m in self.movimentacoes])
+        
+        dados["Valor"] = dados["Valor"].map(
+            lambda x: f"R${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        )
+        
+        dados = dados.sort_values(by='Data')
+        
+        tabela = dados.to_string(index=False, justify='right')
+
+        print(tabela)
+
+        saldo, poupanca = self.cal_saldo()
+
+        print(f"\nSaldo atual: R${saldo:,.2f}")
+        print(f"Saldo Poupança: R${poupanca:,.2f}\n")
 
     def tipo_transacao(self):
         qtd_entrada = 0
