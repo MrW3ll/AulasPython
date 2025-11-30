@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-import pandas as pd
+
 
 class Transacao:
     def __init__(self, valor, tipo, categoria, data):
@@ -14,9 +14,9 @@ class Conta:
     def __init__(self):
         self.movimentacoes = []
 
-    def cal_saldo(self):
+    def calcular_saldo(self):
         total_saldo = 0.0
-        poupanca = self.add_poupanca()
+        poupanca = self.adicionar_poupanca()
         for m in self.movimentacoes:
             if m.tipo == "entrada":
                 total_saldo += m.valor
@@ -25,46 +25,32 @@ class Conta:
         saldo = total_saldo - poupanca
         return saldo, poupanca
 
-    def add_poupanca(self):
+    def adicionar_poupanca(self):
         total_poupanca = 0.0
         for m in self.movimentacoes:
             if m.categoria == "salario":
                 total_poupanca += m.valor * 0.05
         return total_poupanca
 
-    def add_transacao(self, trans):
+    def adicionar_transacao(self, trans):
         self.movimentacoes.append(trans)
-        self.add_poupanca()
-        return self.cal_saldo()
+        return self.calcular_saldo()
 
     def listar_transacao(self):
         print(f"A conta possui {len(self.movimentacoes)} movimentos.\n")
-
-        pd.set_option('display.width', None)
-        pd.set_option('display.max_colwidth', None)
-        pd.set_option('display.colheader_justify','center')
-
-        dados = pd.DataFrame([{
-            'Valor': m.valor,
-            'Tipo': m.tipo,
-            'Categoria': m.categoria,
-            'Data': m.data.strftime("%d/%m/%Y")
-        } for m in self.movimentacoes])
         
-        dados["Valor"] = dados["Valor"].map(
-            lambda x: f"R${x:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        )
+        for m in self.movimentacoes:
+             print( 
+                 f'Data: {m.data.strftime("%d/%m/%Y")} |'
+                 f'Tipo: {m.tipo.capitalize()}:\n'
+                 f'Categoria: {m.categoria.capitalize()} |' 
+                 f'Valor: R${m.valor:,.2f}' 
+             ) 
         
-        dados = dados.sort_values(by='Data')
-        
-        tabela = dados.to_string(index=False, justify='right')
-
-        print(tabela)
-
-        saldo, poupanca = self.cal_saldo()
-
-        print(f"\nSaldo atual: R${saldo:,.2f}")
+        saldo, poupanca = self.cal_saldo() 
+        print(f"\nSaldo atual: R${saldo:,.2f}") 
         print(f"Saldo Poupança: R${poupanca:,.2f}\n")
+
 
     def tipo_transacao(self):
         qtd_entrada = 0
@@ -79,29 +65,32 @@ class Conta:
         qtd_saida = 0
         valor_saida = 0.0
 
-        for m in self.movimentacoes:
-            if m.tipo == "saida":
-                qtd_saida += 1
-                valor_saida += m.valor
+        if len(self.movimentacoes) == 0:
+            return 0, 0.0
+        else:    
+            for m in self.movimentacoes:
+                if m.tipo == "saida":
+                    qtd_saida += 1
+                    valor_saida += m.valor
 
-        percentual_saida = (qtd_saida / len(self.movimentacoes)) * 100
-        return percentual_saida, valor_saida
+            percentual_saida = (qtd_saida / len(self.movimentacoes)) * 100
+            return percentual_saida, valor_saida
 
     def menu_conta(self):
         os.system("cls")
 
-        self.opcao = input(
+        return input(
             "Selecione a ação desejada:\n\n[1]Cadastrar \n[2]Listar \n[3]Saldo \n[4]Verificar Saude \n[5]Saldo Poupanca \n[6]Sair\n"
         )
-        return self.opcao
+
 
     def menu_inicial(self):
-        self.opcao = int(
+        return int(
             input(
                 "\n\n[1] Voltar menu \n[2] Sair\n"
             )
         )
-        return self.opcao
+
 
 
 con = Conta()
@@ -146,7 +135,7 @@ while True:
                 continue
 
         trans = Transacao(valor, tipo, categoria, data)
-        con.add_transacao(trans)
+        con.adicionar_transacao(trans)
 
     elif opcao == '2':
 
@@ -157,8 +146,8 @@ while True:
     elif opcao == '3':
         os.system("cls")
         
-        saldo, poupanca = con.cal_saldo()
-        print(f"Saldo disponivel: {con.cal_saldo():.2f}\n")
+        saldo, poupanca = con.calcular_saldo()
+        print(f"Saldo disponivel: {saldo:.2f}\n")
         print(f"Saldo poupanca: {poupanca:.2f}")
 
         con.menu_inicial()
@@ -180,7 +169,7 @@ while True:
     elif opcao == '5':
 
         os.system("cls")
-        poupanca = con.add_poupanca()
+        poupanca = con.adicionar_poupanca()
         print(f"Saldo Poupança: {poupanca:.2f}")
         con.menu_inicial()
 
